@@ -1,0 +1,110 @@
+filters:
+  and:
+    - file.inFolder("To-Do daily/Tasks")
+formulas:
+  Tamam: if(habit == "stretch", stretch_1 && stretch_2, done)
+  Baslik: name
+  Renk: if(formula.Tamam, "purple", "")
+  Ayrinti: if(habit == "stretch", if(stretch_1 && stretch_2, "2 / 2", if(stretch_1, "1 / 2", "0 / 2")), "")
+  Sira: if(habit == "walking", 1, if(habit == "med", 2, if(habit == "thoughts", 3, if(habit == "stretch", 4, 5))))
+properties:
+  file.name:
+    displayName: Görev
+  note.name:
+    displayName: Alışkanlık
+  note.due:
+    displayName: Tarih
+  note.done:
+    displayName: Tamam
+  note.stretch_1:
+    displayName: Stretch 1
+  note.stretch_2:
+    displayName: Stretch 2
+  note.habit:
+    displayName: Rutin
+  note.tags:
+    displayName: Etiketler
+  formula.Ayrinti:
+    displayName: Ayrıntı
+views:
+  - type: table
+    name: Bugün
+    filters:
+      and:
+        - due == today()
+    order:
+      - note.name
+      - done
+      - formula.Ayrinti
+    sort:
+      - property: formula.Sira
+        direction: ASC
+  - type: table
+    name: Bu hafta
+    filters:
+      and:
+        - due.format("GGGG-WW") == today().format("GGGG-WW")
+    groupBy:
+      property: due
+      direction: DESC
+    order:
+      - file.name
+      - done
+      - stretch_1
+      - stretch_2
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: just-simple-calendar
+    name: Takvim
+    order:
+      - file.name
+    dateProperty: note.due
+    titleProperty: formula.Baslik
+    colorProperty: formula.Renk
+    weekStart: "1"
+  - type: table
+    name: Alışkanlıklar
+    groupBy:
+      property: habit
+      direction: ASC
+    order:
+      - file.name
+      - done
+      - stretch_1
+      - stretch_2
+    sort:
+      - property: due
+        direction: DESC
+    summaries:
+      done: Checked
+      stretch_1: Checked
+      stretch_2: Checked
+  - type: table
+    name: Son kayıtlar
+    order:
+      - file.name
+      - due
+      - done
+      - stretch_1
+      - stretch_2
+    sort:
+      - property: due
+        direction: DESC
+      - property: file.name
+        direction: ASC
+    limit: 12
+  - type: table
+    name: Tüm görevler
+    order:
+      - file.name
+      - due
+      - done
+      - stretch_1
+      - stretch_2
+      - habit
+    sort:
+      - property: due
+        direction: DESC
+      - property: file.name
+        direction: ASC

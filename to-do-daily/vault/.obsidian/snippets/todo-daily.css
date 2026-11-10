@@ -1,0 +1,235 @@
+/* To-Do daily — mor tema, ince kapak, bugün paneli, haftalık ızgara ve toplam kartı */
+body {
+  --td-primary: #6d44ba; --td-primary-fg: #ffffff;
+  --td-accent: #ece7f6; --td-accent-fg: #4d288b;
+  --td-card: #ffffff; --td-border: #e3e0e9;
+  --td-muted: #f0eff4; --td-muted-fg: #676170;
+  /* onay düğmesi: boş halka rengi ve onay işareti (SVG maskesi) */
+  --td-ring: color-mix(in srgb, var(--td-muted-fg) 55%, transparent);
+  --td-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 12.5l4.2 4.2L18.5 7.8'/%3E%3C/svg%3E");
+}
+body.theme-dark {
+  --td-primary: #bca0ed; --td-primary-fg: #251a39;
+  --td-accent: #393044; --td-accent-fg: #dfcaff;
+  --td-card: #232327; --td-border: #3d3945;
+  --td-muted: #29272e; --td-muted-fg: #b7b1c2;
+}
+
+/* ---- sayfa çerçevesi */
+.todo-daily {
+  --file-line-width: 1060px;
+  --interactive-accent: var(--td-primary);
+  --interactive-accent-hover: var(--td-primary);
+  --text-on-accent: var(--td-primary-fg);
+  /* bölüm başlıkları küçük ve sönük; Reading ve Live Preview'da aynı görünür */
+  --h2-size: 1rem; --h2-weight: 600; --h2-color: var(--td-muted-fg);
+}
+.todo-daily .metadata-container,
+.todo-daily .inline-title { display: none !important; }
+.todo-daily .markdown-preview-sizer,
+.todo-daily .cm-sizer,
+.todo-daily .cm-contentContainer { max-width: 1060px !important; }
+.todo-daily h2 {
+  font-size: 1rem; font-weight: 600; color: var(--td-muted-fg);
+  border: 0; margin: 30px 0 14px;
+}
+
+/* ---- kapak (96 px bant, altta sayfa rengine geçer) + başlık */
+.todo-daily .internal-embed[alt="td-cover"],
+.todo-daily .image-embed[alt="td-cover"] { position: relative; display: block !important; width: 100% !important; max-width: 100% !important; }
+.todo-daily [alt="td-cover"] .image-wrapper { display: flex !important; width: 100% !important; max-width: 100% !important; }
+.todo-daily img[alt="td-cover"],
+.todo-daily [alt="td-cover"] img {
+  display: block !important; width: 100% !important; max-width: 100% !important; height: 96px !important;
+  object-fit: cover !important; object-position: center 42% !important; border-radius: 12px !important;
+}
+.todo-daily .internal-embed[alt="td-cover"]::after,
+.todo-daily .image-embed[alt="td-cover"]::after {
+  content: ""; position: absolute; inset: 0; border-radius: 12px; pointer-events: none;
+  background: linear-gradient(to bottom, transparent 20%, var(--background-primary) 100%);
+}
+.td-header { padding: 14px 2px 6px; }
+.td-title { font-size: 1.75rem; font-weight: 650; letter-spacing: -.045em; line-height: 1.15; color: var(--text-normal); }
+
+/* ---- Bugün paneli (Sayaçlar.md içinden gelir) */
+.todo-daily .markdown-embed:has(.td-hero) { border: 0 !important; padding: 0 !important; margin: 0 !important; }
+.todo-daily .markdown-embed:has(.td-hero) .markdown-embed-title,
+.todo-daily .markdown-embed:has(.td-hero) .markdown-embed-link { display: none !important; }
+.todo-daily .markdown-embed:has(.td-hero) .markdown-embed-content { max-height: none !important; padding: 0 !important; }
+.todo-daily .internal-embed:has(.td-hero) { display: block; }
+
+.td-label-row { display: flex; align-items: baseline; justify-content: space-between; margin: 20px 0 10px; }
+.td-label { font-size: .7rem; font-weight: 600; letter-spacing: .14em; color: var(--td-muted-fg); }
+.td-count { font-size: .95rem; color: var(--td-muted-fg); font-variant-numeric: tabular-nums; }
+.td-count b { font-size: 1.4rem; font-weight: 650; letter-spacing: -.02em; color: var(--text-normal); }
+.td-hint { font-size: .8rem; color: var(--td-muted-fg); font-variant-numeric: tabular-nums; }
+.td-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; margin-bottom: 14px; }
+.td-seg i { height: 6px; border-radius: 99px; background: var(--td-muted); }
+.td-seg i.on { background: var(--td-primary); }
+.td-empty { padding: 14px 16px; border: 1px dashed var(--td-border); border-radius: 10px; color: var(--td-muted-fg); font-size: .85rem; }
+
+/* kutular: tablo satırları kutu olur; satırın sağındaki Meta Bind toggle'ı yuvarlak onay düğmesine çevrilir.
+   Kutunun dolu/kısmi görünümü üretilmiş sınıflardan değil düğmenin kendi durumundan (.is-enabled) okunur;
+   böylece tıklayınca panel yenilenmeden anında değişir. */
+.todo-daily table:has(.td-tile) { display: block; width: 100%; margin: 0 0 10px; border: 0; border-radius: 0; background: none; overflow: visible; }
+.todo-daily table:has(.td-tile) thead { display: none; }
+.todo-daily table:has(.td-tile) tbody { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.todo-daily table:has(.td-tile) tr {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  padding: 11px 14px; border: 1px solid var(--td-border); border-radius: 10px; background: var(--td-card);
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.todo-daily table:has(.td-tile) td { display: flex; align-items: center; gap: 8px; border: 0; padding: 0; background: none; }
+/* kutu hazır: bütün düğmeler açık */
+.todo-daily :is(table:has(.td-tile)) tr:has(.checkbox-container.is-enabled):not(:has(.checkbox-container:not(.is-enabled))) {
+  background: var(--td-accent); border-color: transparent;
+  & small { color: var(--td-accent-fg); }
+}
+/* kutu kısmen hazır: stretch'te iki düğmeden biri açık */
+.todo-daily table:has(.td-tile) tr:has(.checkbox-container.is-enabled):has(.checkbox-container:not(.is-enabled)) { border-color: var(--td-primary); }
+
+/* düğme: boş halka → dolu daire + onay işareti */
+.todo-daily :is(table:has(.td-tile)) td:last-child { gap: 12px; }
+.todo-daily :is(table:has(.td-tile)) td:last-child :is(code, .mb-input-wrapper) {
+  display: flex; align-items: center; margin: 0; padding: 0; border: 0; background: none; line-height: 0;
+}
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container {
+  box-sizing: border-box; flex-shrink: 0; width: 26px; height: 26px; margin: 0; padding: 0;
+  border: 2px solid var(--td-ring); border-radius: 50%; background: transparent; box-shadow: none; outline: 0;
+  cursor: pointer; transition: background-color .2s ease, border-color .2s ease, transform .15s ease;
+}
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container:hover {
+  border-color: var(--td-primary); background: color-mix(in srgb, var(--td-primary) 14%, transparent);
+}
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container.is-enabled { border-color: var(--td-primary); background: var(--td-primary); }
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container.is-enabled:hover { filter: brightness(1.08); }
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container:active { transform: scale(.9); }
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--td-primary) 60%, transparent); outline-offset: 2px;
+}
+/* tıklama alanı halkadan biraz geniş (görünmez) */
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container::before { inset: -6px; }
+/* eski toggle düğmesi gizlenir; onay işareti açılırken büyüyerek gelir */
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container::after {
+  content: ""; display: block; position: absolute; inset: 0; left: 0; width: auto; height: auto; margin: 0;
+  border-radius: 0; box-shadow: none; pointer-events: none;
+  background: var(--td-primary-fg);
+  -webkit-mask: var(--td-check) center / 62% no-repeat; mask: var(--td-check) center / 62% no-repeat;
+  opacity: 0; transform: scale(.4);
+  transition: transform .22s cubic-bezier(.3, 1.5, .5, 1), opacity .12s ease;
+}
+.todo-daily :is(table:has(.td-tile), table:has(.td-gh)) .checkbox-container.is-enabled::after { opacity: 1; transform: scale(1); }
+.td-tile { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 8px; }
+.td-ic { font-size: 1.05rem; line-height: 1; }
+.td-tile b { font-size: .88rem; font-weight: 600; }
+.td-tile small { font-size: .72rem; color: var(--td-muted-fg); }
+
+
+/* haftalık ızgara: seçili haftanın 7 gününü düzenler (satır = rutin, sütun = gün). Üst tablo gibi kart olur; hücrelerde aynı onay düğmeleri durur.
+   Notu olmayan hücre kesik halkadır (.td-na): üzerine gelince + çıkar, tıklayınca o gün başlar. Gelecek günler soluk bir noktadır.
+   Başlıktaki ‹ bugün › düğmeleri (.td-wk) haftayı değiştirir; bugünün sütun başlığı vurgulanır (.now). */
+.td-label-row:has(.td-nav) { align-items: center; }
+.td-right { display: inline-flex; align-items: center; gap: 12px; }
+.td-nav { display: inline-flex; align-items: center; gap: 4px; }
+.td-wk {
+  display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 26px; height: 24px; padding: 0 9px;
+  border: 1px solid var(--td-border); border-radius: 99px; color: var(--td-muted-fg); font-size: .8rem; line-height: 1; cursor: pointer; user-select: none;
+  transition: border-color .2s ease, background-color .2s ease, color .2s ease, opacity .2s ease, transform .15s ease;
+}
+.td-wk:hover { border-color: var(--td-primary); color: var(--text-normal); background: color-mix(in srgb, var(--td-primary) 12%, transparent); }
+.td-wk:active { transform: scale(.94); }
+.td-wk.off { opacity: .28; pointer-events: none; }
+.td-wk.busy { opacity: .5; pointer-events: none; }
+.td-dh.now :is(small, b) { color: var(--td-primary); }
+.todo-daily table:has(.td-gh) {
+  display: block; width: 100%; margin: 0 0 10px; padding: 2px 10px 4px;
+  border: 1px solid var(--td-border); border-radius: 10px; background: var(--td-card); overflow: visible;
+}
+.todo-daily table:has(.td-gh) :is(thead, tbody) { display: block; }
+.todo-daily table:has(.td-gh) tr { display: grid; grid-template-columns: 124px repeat(7, minmax(0, 1fr)); align-items: center; background: none; }
+.todo-daily table:has(.td-gh) tbody tr { border-top: 1px solid color-mix(in srgb, var(--td-border) 60%, transparent); }
+.todo-daily table:has(.td-gh) :is(td, th) {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0; border: 0; background: none;
+}
+.todo-daily table:has(.td-gh) th { min-height: 50px; }
+.todo-daily table:has(.td-gh) :is(td, th):first-child { justify-content: flex-start; padding-left: 6px; }
+.todo-daily table:has(.td-gh) td :is(code, .mb-input-wrapper) { display: flex; align-items: center; margin: 0; padding: 0; border: 0; background: none; line-height: 0; }
+.todo-daily table:has(.td-gh) .checkbox-container { width: 22px; height: 22px; }
+.todo-daily table:has(.td-gh) .checkbox-container::before { inset: -3px; }
+.td-dh { display: flex; flex-direction: column; align-items: center; gap: 1px; line-height: 1.25; }
+.td-dh small { font-size: .68rem; font-weight: 500; color: var(--td-muted-fg); }
+.td-dh b { font-size: .78rem; font-weight: 600; color: var(--text-normal); }
+.td-rh { display: flex; align-items: center; gap: 8px; font-size: .86rem; font-weight: 600; }
+.td-rh .td-ic { width: 1.3em; text-align: center; }
+.td-off { color: color-mix(in srgb, var(--td-muted-fg) 55%, transparent); font-size: .9rem; line-height: 1; }
+.td-na {
+  position: relative; display: block; box-sizing: border-box; flex-shrink: 0; width: 22px; height: 22px; cursor: pointer;
+  border: 2px dashed color-mix(in srgb, var(--td-muted-fg) 38%, transparent); border-radius: 50%;
+  transition: border-color .2s ease, background-color .2s ease, opacity .2s ease, transform .15s ease;
+}
+.td-na::before, .td-na::after {
+  content: ""; position: absolute; left: 50%; top: 50%; border-radius: 2px; background: var(--td-primary);
+  opacity: 0; transform: translate(-50%, -50%); transition: opacity .15s ease;
+}
+.td-na::before { width: 9px; height: 2px; }
+.td-na::after { width: 2px; height: 9px; }
+.td-na:hover { border-style: solid; border-color: var(--td-primary); background: color-mix(in srgb, var(--td-primary) 12%, transparent); }
+.td-na:hover::before, .td-na:hover::after { opacity: 1; }
+.td-na:active { transform: scale(.9); }
+.td-na.busy { opacity: .4; pointer-events: none; }
+
+/* toplam kartı: solda dört rutinin genel toplamı, sağda etkinlik başına toplam tamamlanma sayısı ve kayıtlı günlere oranı */
+.td-sumcard {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px 32px; align-items: center; margin: 0 0 10px; padding: 20px 22px;
+  border: 1px solid var(--td-border); border-radius: 10px; background: var(--td-card);
+}
+.td-big { display: flex; flex-direction: column; gap: 3px; min-width: 132px; padding: 4px 32px 4px 4px; border-right: 1px solid var(--td-border); }
+.td-big b { font-size: 3.1rem; font-weight: 650; line-height: 1; letter-spacing: -.045em; color: var(--td-primary); font-variant-numeric: tabular-nums; }
+.td-big span { font-size: .84rem; font-weight: 600; color: var(--text-normal); }
+.td-big small { font-size: .72rem; color: var(--td-muted-fg); }
+.td-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 40px; }
+.td-srow { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; }
+.td-sn { display: flex; align-items: center; gap: 8px; }
+.td-sn .td-ic { width: 1.3em; text-align: center; }
+.td-sn b { font-size: .88rem; font-weight: 600; }
+.td-sv { display: flex; align-items: baseline; gap: 5px; font-variant-numeric: tabular-nums; }
+.td-sv b { font-size: 1.15rem; font-weight: 650; letter-spacing: -.02em; }
+.td-sv small { font-size: .72rem; color: var(--td-muted-fg); }
+.td-bar { grid-column: 1 / -1; height: 5px; border-radius: 99px; background: var(--td-muted); overflow: hidden; }
+.td-bar i { display: block; height: 100%; border-radius: 99px; background: var(--td-primary); min-width: 0; }
+@media (max-width: 720px) {
+  .td-sumcard { grid-template-columns: minmax(0, 1fr); }
+  .td-big { padding: 0 0 16px; border-right: 0; border-bottom: 1px solid var(--td-border); }
+  .td-rows { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- Bases tabloları ve takvim */
+.todo-daily .bases-embed {
+  --bases-embed-border-width: 1px;
+  --bases-embed-border-color: var(--td-border);
+  --bases-embed-radius: 8px;
+  --bases-embed-padding: 4px 8px 8px;
+}
+.todo-daily .bases-embed .bases-toolbar { padding-bottom: 4px; }
+.todo-daily .jsc-today .jsc-day-number,
+.todo-daily .jsc-day.is-today .jsc-day-number { background: var(--td-primary); color: var(--td-primary-fg); }
+
+/* ---- callout'lar */
+.todo-daily .callout[data-callout] { --callout-color: 109, 68, 186; border-radius: 10px; }
+body.theme-dark .todo-daily .callout[data-callout] { --callout-color: 188, 160, 237; }
+
+/* ---- sayfa sonu bağlantıları (> [!td-links]) */
+.todo-daily .callout[data-callout="td-links"] {
+  background-color: transparent; border: 0; border-top: 1px solid var(--td-border); border-radius: 0;
+  margin: 34px 0 0; padding: 14px 0 0; mix-blend-mode: normal;
+}
+.todo-daily .callout[data-callout="td-links"] .callout-title { display: none; }
+.todo-daily .callout[data-callout="td-links"] .callout-content { padding: 0; font-size: .78rem; color: var(--td-muted-fg); }
+.todo-daily .callout[data-callout="td-links"] .callout-content p { margin: 0; }
+.todo-daily .callout[data-callout="td-links"] a { color: var(--td-muted-fg); text-decoration-color: var(--td-border); }
+
+/* ---- tablolar (Bases dahil; panelin kutuları yukarıda ayrıca ele alınır) */
+.todo-daily table { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--td-border); border-radius: 8px; overflow: hidden; }
+.todo-daily th { background: var(--td-muted); color: var(--td-muted-fg); font-size: .72rem; font-weight: 600; text-transform: none; }
+.todo-daily td, .todo-daily th { border: 0; border-top: 1px solid var(--td-border); padding: 7px 12px; }
+.todo-daily thead th { border-top: 0; }

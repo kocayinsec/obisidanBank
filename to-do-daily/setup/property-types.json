@@ -1,0 +1,17 @@
+{
+  "types": {
+    "due": "date",
+    "done": "checkbox",
+    "stretch_1": "checkbox",
+    "stretch_2": "checkbox",
+    "linked": "checkbox",
+    "archived": "checkbox",
+    "tags": "tags",
+    "habit": "text",
+    "name": "text",
+    "task_id": "text",
+    "recurrence": "checkbox",
+    "generatedThrough": "date",
+    "thoughtsStartOn": "date"
+  }
+}

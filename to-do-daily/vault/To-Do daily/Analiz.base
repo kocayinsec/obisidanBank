@@ -1,0 +1,112 @@
+filters:
+  and:
+    - file.inFolder("To-Do daily/Tasks")
+formulas:
+  Yapildi: if(done, 1, 0)
+  Stretch: if(stretch_1 && stretch_2, 2, if(stretch_1, 1, 0))
+  GunlukOran: if(habit == "stretch", if(stretch_1 && stretch_2, 1, 0), if(done, 1, 0))
+properties:
+  formula.Yapildi:
+    displayName: Yapıldı
+  formula.Stretch:
+    displayName: Stretch (0-2)
+  formula.GunlukOran:
+    displayName: Günlük tamamlama
+views:
+  - type: life-tracker
+    name: Genel
+    order:
+      - formula.GunlukOran
+    dateAnchorProperty: note.due
+    granularity: daily
+    columnConfigs:
+      formula.GunlukOran:
+        - id: a0fbe26e-5769-405a-8022-34fb9a8c8ee7
+          propertyId: formula.GunlukOran
+          visualizationType: heatmap
+          displayName: Günlük tamamlama
+          configuredAt: 1794257321563
+          scale:
+            min: 0
+            max: 1
+    gridColumns: 1
+  - type: life-tracker
+    name: Walking 🍃
+    filters:
+      and:
+        - habit == "walking"
+    order:
+      - formula.Yapildi
+    dateAnchorProperty: note.due
+    granularity: daily
+    columnConfigs:
+      formula.Yapildi:
+        - id: 59d3fc7d-9bba-404a-88c4-5dce6b494614
+          propertyId: formula.Yapildi
+          visualizationType: heatmap
+          displayName: Yapıldı
+          configuredAt: 1794257336040
+          scale:
+            min: 0
+            max: 1
+    gridColumns: 1
+  - type: life-tracker
+    name: Meditation 🪐
+    filters:
+      and:
+        - habit == "med"
+    order:
+      - formula.Yapildi
+    dateAnchorProperty: note.due
+    granularity: daily
+    columnConfigs:
+      formula.Yapildi:
+        - id: fb55d721-3f62-4dd4-a20d-c4fb760ca37b
+          propertyId: formula.Yapildi
+          visualizationType: heatmap
+          displayName: Yapıldı
+          configuredAt: 1794257336040
+          scale:
+            min: 0
+            max: 1
+    gridColumns: 1
+  - type: life-tracker
+    name: thoughts 🧠
+    filters:
+      and:
+        - habit == "thoughts"
+    order:
+      - formula.Yapildi
+    dateAnchorProperty: note.due
+    granularity: daily
+    columnConfigs:
+      formula.Yapildi:
+        - id: ecfd8cd1-bb18-4f70-b9a7-73fd156f0062
+          propertyId: formula.Yapildi
+          visualizationType: heatmap
+          displayName: Yapıldı
+          configuredAt: 1794257336040
+          scale:
+            min: 0
+            max: 1
+    gridColumns: 1
+  - type: life-tracker
+    name: Stretch ×2
+    filters:
+      and:
+        - habit == "stretch"
+    order:
+      - formula.Stretch
+    dateAnchorProperty: note.due
+    granularity: daily
+    columnConfigs:
+      formula.Stretch:
+        - id: bca5f0b9-c013-45d3-842b-6e5a85fde81e
+          propertyId: formula.Stretch
+          visualizationType: heatmap
+          displayName: Stretch (0-2)
+          configuredAt: 1794257336040
+          scale:
+            min: 0
+            max: 2
+    gridColumns: 1

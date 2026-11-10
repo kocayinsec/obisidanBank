@@ -1,0 +1,5 @@
+{
+  "templates_folder": "To-Do daily/_templates",
+  "user_scripts_folder": "To-Do daily/_scripts",
+  "startup_templates": ["To-Do daily/_templates/generate-days.md"]
+}

@@ -1,0 +1,36 @@
+[
+  {
+    "label": "Bugünü oluştur",
+    "icon": "",
+    "style": "default",
+    "class": "",
+    "cssStyle": "",
+    "backgroundImage": "",
+    "tooltip": "",
+    "id": "td-days",
+    "hidden": false,
+    "actions": [
+      {
+        "type": "runTemplaterFile",
+        "templateFile": "To-Do daily/_templates/generate-days.md"
+      }
+    ]
+  },
+  {
+    "label": "↻ Sayaçları yenile",
+    "icon": "",
+    "style": "default",
+    "class": "",
+    "cssStyle": "",
+    "backgroundImage": "",
+    "tooltip": "",
+    "id": "td-stats",
+    "hidden": false,
+    "actions": [
+      {
+        "type": "runTemplaterFile",
+        "templateFile": "To-Do daily/_templates/refresh-stats.md"
+      }
+    ]
+  }
+]
