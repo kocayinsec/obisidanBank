@@ -1,4 +1,4 @@
-# obisidanBank
+# obsidian-bank
 
 A small bank of ready-to-use Obsidian setups. Every folder is a self-contained template with default content only, no personal data.
 
